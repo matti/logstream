@@ -1,0 +1,36 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: collector-containers
+  namespace: logstream
+spec:
+  selector:
+    matchLabels:
+      app: collector-containers
+  template:
+    metadata:
+      labels:
+        app: collector-containers
+    spec:
+      terminationGracePeriodSeconds: 0
+      containers:
+        - name: fluentd
+          image: mattipaksula/logstream-collector-containers
+          volumeMounts:
+            - name: var-log-containers
+              mountPath: /var/log/containers
+            - name: var-log-pods
+              mountPath: /var/log/pods
+            - name: var-lib-docker-containers
+              mountPath: /var/lib/docker/containers
+      volumes:
+        - name: var-log-containers
+          hostPath:
+            path: /var/log/containers
+        - name: var-log-pods
+          hostPath:
+            path: /var/log/pods
+        - name: var-lib-docker-containers
+          hostPath:
+            path: /var/lib/docker/containers

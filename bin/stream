@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+_term() {
+  >&2 echo "TERM"
+  exit 0
+}
+trap "_term" TERM
+
+_err() {
+  >&2 echo "err: $*"
+  exit 1
+}
+
+export KUBECONFIG="$HOME/.kube/logstream"
+eval "$(minikube -p logstream docker-env)"
+
+case "${1:-}" in
+  minikube:start)
+    minikube -p logstream start --vm-driver hyperkit --cpus $(nproc) --memory 2048 --disk-size 10Gi
+  ;;
+  k|kubectl)
+    kubectl "${@:2}"
+  ;;
+  skaffold)
+    cd "$2"
+      skaffold "${@:3}"
+  ;;
+  dev)
+    $0 k apply -f namespace.yaml
+
+    while true; do
+      $0 skaffold components/collector-containers dev &
+      $0 skaffold components/router dev &
+      $0 skaffold components/writer dev &
+      $0 skaffold randomlogger dev &
+
+      wait $(jobs -p)
+    done
+  ;;
+  *)
+    _err "usage"
+  ;;
+esac

@@ -1,0 +1,1 @@
+FROM chentex/random-logger

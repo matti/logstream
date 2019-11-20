@@ -1,0 +1,12 @@
+version: "2"
+
+services:
+  collector-containers:
+    image: mattipaksula/logstream-collector-containers
+    build: components/collector-containers
+  router:
+    image: mattipaksula/logstream-router
+    build: components/router
+  writer:
+    image: mattipaksula/logstream-writer
+    build: components/writer

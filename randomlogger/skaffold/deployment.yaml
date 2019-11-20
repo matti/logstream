@@ -1,0 +1,19 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: randomlogger
+  namespace: randomlogger
+spec:
+  selector:
+    matchLabels:
+      app: randomlogger
+  template:
+    metadata:
+      labels:
+        app: randomlogger
+    spec:
+      terminationGracePeriodSeconds: 0
+      containers:
+        - name: logger-deployment
+          image: mattipaksula/logstream-randomlogger
